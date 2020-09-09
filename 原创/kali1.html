@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Kali Other Install</title>
+ <link rel="stylesheet" href="css/kali1.css" type="text/css" />
+        <link rel="shortcut icon" href="Images/favicon22.ico">
+</head>
+
+<body>
+	<div id="left1">
+		<font face="宋体" size="+1">
+		<strong>·
+		<br>萌新·小白的博客<br>Cloud.Sir Blog<br>
+	</strong></font></div>
+	<div id="menu">
+		<a href="index.html" title="返回首页"><img src="Images/home.jpg" class="home"/></a>
+		<a title="#"><img src="Images/message.jpg" class="home"/></a>
+		<a title="#"><img src="Images/music.jpg" class="home"/></a>
+		<a title="#"><img src="Images/night.jpg" class="home"/></a>
+		<a title="#"><img src="Images/tool.jpg" class="home"/></a>
+	</div>
+	<div id="mohu" class="under"></div>
+	<div id="jieshao" align="center">
+		<font color="#000" face="方正卡通简体" size="5px">
+			Kali 安装成功后需要做的事情
+		</font>
+	</div>
+	
+	<div id="bigbeijing"></div>
+	
+	<div id="zi">
+	  <font color="#000" size="+4" face="Arial Black, Gadget, sans-serif">
+	  <strong>
+		  Kali Other install...
+	  </strong></font></div>
+	   <div id="important">
+  	 <font color="#000">
+     <p>
+     <strong>
+		 kali版本为 "kali-linux-2019.1-amd64" ，装在真实机上的桌面环境。想把它打造成主力系统，以下就是安装各个软件的步骤。是以真实机环境的视角来写的。更多的是面向基础（大神请忽略吧）如有不妥之处请@我\\*^o^*//
+	 </strong>
+	 </p>
+	  </font>
+		 <h3 align="center"><font color="ff0000">Kali 安装完后要做的事情</font></h3>
+		 <font color="#666">
+		 <h4 align="center">
+		 <small>
+		  2019-4-20 10:49
+		 </small></h4>
+	  </font>
+	  <p><font color="#000" face="微软雅黑">
+	  	 安装的时候遇到了一个小插曲；刚开始打开虚拟机的时候第一步就是选择语言，结果我的键盘没有反应？？原来是我没有开启。在编辑虚拟机中找到第一项：常规、找到最下面的：增强型键盘，选择：在可用时使用。
+		  </font></p><br>
+	 
+	  <pre><font color="#000" face="微软雅黑"><font color="FF0047"><b>
+配置动态地址：</b></font>
+配置文件：vi /etc/network/interfaces
+#The loopback network interface
+auto lo
+iface lo inet loopback
+#The primary network interfaces
+auto eth0
+iface eth0 inet dhcp   //配置eth0自动获取IP地址
+ </font></pre>
+	  <p>
+  	  <pre><font color="#000" face="微软雅黑"><font color="FF0047"><b>
+配置静态地址：</b></font>
+配置文件：/etc/network/interface
+#The loopback network interface
+auto lo  （auto表示启动系统激活设备，auto lo表示loop回环地址）
+iface lo inet loopback
+#The primary network interfaces
+auto eth0
+iface eth0 inet static    //配置eth0使用默认的静态地址
+address 192.168.77.133   //设置eth0的IP地址
+netmask 255.255.255.0   //配置eth0的子网掩码
+gateway 192.168.0.1    //配置当前主机的默认网关
+  	  </font></pre></p>
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="FF0047"><b>
+设定DNS服务器：</b></font>
+配置文件：vi /etc/resolv.cof --- 必须设置，否则无法上网
+nameserver 114.114.114.114  
+/etc/init.d/networking restart   //重启所有网卡服务
+ifdown eth0   //关闭指定网卡
+ifup eth0    //开启指定网卡
+Ifdown eth0 && ifup eth0   //对于远程连接一定要这样，否则关了网卡就连不上了。。。
+    </font></pre></p>
+    
+     
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+这时候发现WIFI打不开，系统提示没有网络适配器。好吧，那我们安装一下网卡驱动</b></font>
+更新：apt update && dist-upgrade
+安装内核头文件：apt install linux-headers-`uname -r`
+安装驱动：lspci用来确定自己的无线网卡型号
+例如：Network controller : Broadcom Limited BCM43142 802.11b/
+所以我的网卡型号就是：BCM43142
+安装：apt insatll broadcom-sta-dkms
+重启   附上<a target="_blank" href="https://github.com/akrasic/broadcom-wl">Githu</a>链接
+      </font></pre></p>
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="FF0047"><b>
+提示有线未托管</b></font>
+我的情况是，可以ping通，但是有线连接显示未托管
+因为当Network-Manager发现 /etc/network/interfaces 被改动时，则关闭自己（这时就会显示未托管）
+除非将Managed设置成true
+当Managed设置为true时，/etc/network/interfaces，则不生效
+配置文件：vi /etc/NetworkManager/NetworkManger.conf
+将false改成true，并重启
+      </font></pre></p>
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="FF0047"><b>
+酸酸乳代理设置</b></font>
+代理的工作原理：
+首先通过proxychains将本地流量发往localhost的1080端口
+Localhost的1080端口和VPS的8080端口通过shadowsocker建立ssr连接
+本地流量→localhost1080→VPS8080→目标站点
+首先我们配置一下proxychains
+vi /etc/proxychains.conf
+将dynamic_chain前面的注释去掉，再将[ProxyList]下的socks4 改为socks5，
+并且127.0.0.1后面的端口改为1080
+安装SSR脚本：
+wget https://onlyless.github.io/ssr sudo mv ssr /usr/local/bin sudo chmod 766 /usr/local/bin/ssr
+安装SSR：ssr install
+配置SSR：ssr config
+配置完之后，保存
+大家可以看我的 <a target="_blank" href="https://github.com/Cloud300/Cloud300.github.io/tree/master/kali%E7%B4%A0%E6%9D%90/ssr%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">栗子</a>
+好了，现在我跟大家说一下需要注意的点：正常上网，只需要在终端把酸酸乳打开，
+然后输入proxychains google-chrome  //指定这一个应用经过代理
+如果你觉得麻烦，可以手动开启全局代理，但是这样网易云音乐显示没有网络连接(可以配置)
+具体使用方法请看这里，，<a target="_blank" href="https://github.com/Cloud300/Cloud300.github.io/tree/master/kali%E7%B4%A0%E6%9D%90/%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8A%E7%BD%91%E6%AD%A5%E9%AA%A4">推荐看一下</a>
+      </font></pre></p>
+      
+      <p>
+      <pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+网络搞定后，我们需要更新系统跟软件了,更新源在这：</b></font><a target="_blank" href="https://github.com/Cloud300/Cloud300.github.io/blob/master/kali%20linux%20%E6%9B%B4%E6%96%B0%E6%BA%90">Github</a>
+配置更新源： leafpad /etc/apt/sources.list
+更新软件源、软件包：apt-get update & apt-get upgrade
+更新系统：apt-get dist-upgrade
+清理安装文件：apt-get clean
+重启：reboot
+      </font></pre></p>
+      
+      
+       <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装搜狗输入法</b></font>
+安装fcitx(输入法框架)：apt-get install fcitx
+修复依赖：apt-get -f install
+还是不行的话尝试更换源
+安装fcitx-libs-qt：apt-get install fcitx-libs-qt
+去搜狗输入法官网下载对应版本的deb安装包
+使用终端打开安装包文件的目录
+安装：dpkg -i 包名字
+修复依赖：apt-get --fix-broken install
+启用输入法：im-config
+进入输入法配置，选择确定，然后点击是，在弹出来的输入法选择框中选择fcitx，确定
+注销重新登录。打开所有程序输入fcitx，选择fcitx配置，将搜狗输入法移到第一个
+      </font></pre></p>
+      
+      
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装Google浏览器</b></font>
+下载安装文件：<a target="_blank" href="https://share.weiyun.com/53EMlyF">Download</a>
+下载完后，在文件所在目录打开终端
+安装：dpkg -i 包名*.deb
+修复依赖：apt-get install -f
+修改配置文件：leafpad /opt/google/chrome/google-chrome
+将exec -a "$0" "$HERE/chrome" "$@" --no-sandbox 
+#添加--no-sandbox
+      </font></pre></p>
+      
+      
+      
+      
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装网易云音乐</b></font>
+其实正常安装就可以了，去官网下载安装包，然后dpkg -i 包名，apt-get install -f 但是我遇到的问题是：
+修复依赖也不行!!
+这里说一下修复依赖也无法安装的情况：
+安装一些基本包：apt install devscripts equivs git
+克隆仓库并进入：
+git clone https://github.com/linuxdeepin/qcef.git && cd qcef
+安装依赖关系：
+rm -f qcef-build-deps_*_*.deb
+mk-build-deps -s sudo -i
+建立一个完整的Libqcef1 Debian软件包：
+dpkg-buildpackage -uc -us -b -j$(nproc)
+安装并清理：
+sudo apt install $(pwd)/../libqcef1_*.deb
+rm ../*qcef* 2> /dev/null
+现在可以安装了：dpkg -i 包名*deb
+修复依赖：apt-get install -f
+     </font></pre></p>
+      
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装办公软件WPS</b></font>
+先到wps官网：<a target="_blank" href="https://www.wps.cn/product/wpslinux#">Download</a>
+安装：dpkg -i 包名.deb
+安装完成后，打开wps会提示缺少字体：<a target="_blank" href="https://github.com/Cloud300/Cloud300.github.io/tree/master/kali%E7%B4%A0%E6%9D%90/WPS%E7%BC%BA%E5%A4%B1%E5%AD%97%E4%BD%93">Download</a>
+下载解压，将解压出的wps-office文件夹复制到/usr/share/fonts即可
+再次运行
+      </font></pre></p>
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装桌面监视器（conky）</b></font>
+安装：apt-get install conky
+美化包：<a target="_blank" href=" https://github.com/Cloud300/Harmattan">Download</a>
+右边的下载zip包，将这个25M左右的文件下载下来
+你可以看这个档案来进行自定义配置：<a target="_blank" href="http://conky.sourceforge.net/docs.html">Here</a>
+Conky详细配置说明：<a target="_blank" href="https://jn615.iteye.com/blog/672570">Here</a>
+Conky配置文件：vi /root/.conkyrc
+我的配置文件：<a target="_blank" href="https://github.com/Cloud300/Cloud300.github.io/tree/master/kali%E7%B4%A0%E6%9D%90/Conky%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">Github</a>
+      </font></pre></p>
+      
+      
+      <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装垃圾清理软件</b></font>
+apt-get install bleachbit
+      </font></pre></p>
+           
+           
+       <p><pre><font color="#000" face="微软雅黑"><font color="ff0047"><b>
+安装QQ、TIM、WeChat、迅雷极速版、百度网盘、Foxmail</b></font>
+使用Docker作为容器，方便管理、删除、卸载、迁移等
+确认APT添加了https协议和CA证书：
+apt-get install apt-transport-https ca-certificates
+安装Docker（需要内核大于3.10并且是64位的机器，2019 64位没问题）：
+apt-get install docker docker-compose
+克隆这个仓库：
+git clone https://github.com/RokasUrbelis/docker-wine-linux.git
+速度取决你的网络环境
+这时你会发现在文件夹的主目录里多了一个文件夹：docker-wine-linux
+在终端中切换到这个文件夹下：cd docker-wine-linux
+直接运行：bash run.sh
+因为构建docke镜像和克隆deepin-wine-ubuntu，第一次执行时间比较长（大概需要２－５分钟，
+取决于带宽及硬件配置）
+执行run.sh后会创建容器并后台运行，并且会告诉你容器ID以及相应的命令让你执行（默认执行的是TIM）
+格式为：Source start.sh -i 容器id 应用名
+执行完此命令需要等待一会，取决于系统相应速度
+应用名列表可以使用：
+bash start.sh --help   来查看，应用名不区分大小写也可以运行
+有时候wine会出现不稳定的情况，看不到页面、鼠标无法移动或者出现崩溃的情况都是正常的，
+此时你需要kill掉后台pid或者删除容器来释放系统资源或者直接重新运行run.sh
+追求稳定的话建议每个wine应用使用单独容器运行(即每次运行应用前先运行run.sh)，
+而不是集中在一个容器上这样方便管理并且降低崩溃概率。
+QQ WeChat的文件传输：
+执行完run.sh后会生成一个APP_PATH目录(以下简称此目录)，此目录已经映射到了你当前容器的/root目录，
+用户上传/下载文件的作用域都在此目录的子目录
+只有登录应用才会在此目录生成对应应用的用户文件夹，你可以把你要上传的文件拷贝进去然后上传到应用
+从应用中下载的重要文件最好从此目录拷贝到你的家目录或其他目录打开，
+因为容器处于非运行状态时用户是访问不了这些文件的，
+并且执行卸载操作的时候容器将全部被删除，此目录里的文件也会被销毁
+多次运行容器或应用也不会影响文件存放路径，此目录是所有应用共用的空间，
+所以不必担心文件路径冲突等问题
+资源释放：
+每执行一次run.sh会生成一个容器，每次重启系统这些容器就会处于退出状态，
+并且你不会再使用它，
+久而久之容器数量就会占据硬盘大量空间，直接执行bash clear.sh即可释放资源
+建议至少每个月执行一次(每天一次更好)，具体多久执行一次取决于你系统资源是否够用，
+可配合crontab使用
+执行clear.sh的时候所有与docker-wine-linux镜像有关的容器都将被删除，
+在此之前请备份好APP_PATH目录里面你通过应用传输的重要文件
+目前支持的应用：
+QQ、TIM、WeChat、百度网盘、迅雷急速版、Foxmail
+鸣谢：Anthony·北慕城南  https://github.com/RokasUrbelis
+总结：开机后需要打开QQ跟微信的步骤
+打开docker服务：service docker start
+生成容器：bash run.sh
+然后复制系统给出的命令，后面的应用名在TIM打开后可以改成WeChat
+其他命令：
+查看已经创建的容器：docker ps -a
+查看已经启动的容器：docker ps -s
+启动容器名为66的容器：docker start 66
+停止容器名为66的容器：docker stop 66
+删除容器名为66的容器：docker rm 66
+重命名一个容器：docker rename old-name new-name
+      </font></pre></p>
+
+      <h4 align="right">
+      <font color="#FF0000" size="+1">《原创》持续更新中...
+      </font>
+      </h4>
+      <div class="next2">
+        <a href="blog.html" title="社会工程"><img src="Images/num1.gif" class="next"></a>
+         &emsp; &emsp;
+        <a title="第二页"><img src="Images/num2.gif" class="next"></a>
+         &emsp; &emsp;
+    	<a href="#" title="下一页"><img src="Images/num3.gif" class="next"></a>
+	  </div>
+</div>
+
+
+
+
+
+
+</body>
+</html>

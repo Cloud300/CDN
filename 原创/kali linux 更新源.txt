@@ -1,0 +1,19 @@
+#华为源
+deb https://mirrors.huaweicloud.com/kali kali-rolling main non-free contrib
+deb-src https://mirrors.huaweicloud.com/kali kali-rolling main non-free contrib
+
+#中科大源
+deb http://mirrors.ustc.edu.cn/kali kali-rolling main non-free contrib 
+deb-src http://mirrors.ustc.edu.cn/kali kali-rolling main non-free contrib
+
+#清华大学 Kali源
+deb http://mirrors.tuna.tsinghua.edu.cn/kali kali-rolling main contrib non-free 
+deb-src https://mirrors.tuna.tsinghua.edu.cn/kali kali-rolling main contrib non-free
+
+#浙江大学
+deb http://mirrors.zju.edu.cn/kali kali-rolling main contrib non-free
+deb-src http://mirrors.zju.edu.cn/kali kali-rolling main contrib non-free
+
+#官方Kali源
+#deb http://http.kali.org/kali kali-rolling main non-free contrib
+#deb-src http://http.kali.org/kali kali-rolling main non-free contrib
