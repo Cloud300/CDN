@@ -1,12 +1,3 @@
----
-title: CDN加速博客访问
-date: 2020-08-31 17:23:33
-tags: [CDN,Hexo,笔记]
-cover: https://cdn.jsdelivr.net/gh/Cloud300/Picture-bed/blog_pic/紫禁城的雪.jpg
-categories: 笔记
-thumbnail: https://cdn.jsdelivr.net/gh/Cloud300/Picture-bed/blog_pic/小预览01.png
----
-
 ## 前言😄
 
 **CDN** 的全称是 **Content Delivery Network**，即内容分发网络。
